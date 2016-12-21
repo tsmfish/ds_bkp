@@ -1,4 +1,5 @@
 import re
+import threading
 
 
 class RE:
@@ -49,19 +50,17 @@ def is_contains(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: True if string contains regular expression
     """
+    assert(regexp.__class__.__name__ not in ('SRE_Pattern', str.__class__.__name__))
     if regexp.__class__.__name__ == 'SRE_Pattern':
         if regexp.search(text):
             return True
         else:
             return False
-    elif regexp.__class__.__name__ == str.__class__.__name__:
+    if regexp.__class__.__name__ == str.__class__.__name__:
         if re.search(regexp, text, flags):
             return True
         else:
             return False
-    else:
-        return False
-
 
 def ds_print(ds, message, io_lock=None):
     """
@@ -71,6 +70,9 @@ def ds_print(ds, message, io_lock=None):
     :param message:
     :param io_lock: object threading.Lock or threading.RLock
     """
+    assert(io_lock and
+           io_lock.__class__.__name__ not in (threading.Lock().__class__.__name__,
+                                              threading.RLock().__class__.__name__))
     if io_lock: io_lock.acquire()
     print "{ds} : {message}".format(ds=ds, message=message)
     if io_lock: io_lock.release()

@@ -3,24 +3,19 @@
 
 import sys
 import threading
-
-import math
-
-from datetime import date, datetime
-from paramiko import AuthenticationException
+import time
+import re
+import getpass
+import os
+import optparse
 
 sys.path.insert(1, '/home/erkki/.local/lib/python2.6/site-packages/ecdsa-0.13-py2.6.egg/')
 sys.path.insert(1, '/home/erkki/.local/lib/python2.6/site-packages/requests-2.9.1-py2.6.egg')
 sys.path.insert(1, '/home/erkki/.local/lib/python2.6/site-packages/paramiko-1.16.0-py2.6.egg')
 
-import optparse
-import getopt
 import paramiko
-import time
-import re
-import getpass
-import os
-from socket import gethostbyname, gaierror
+from paramiko import AuthenticationException
+from socket import gaierror
 from scp import SCPClient
 from ds_helper import ds_print, RE, extract
 
@@ -41,7 +36,7 @@ def get_file_name(ds, user, secret):
         except Exception as e:
             pass
         time.sleep(CONNECT_TRY_INTERVAL)
-    ds_print(ds, "*** SSH establish with ", io_lock)
+    ds_print(ds, "*** SSH establish with ")
     channel = client.invoke_shell()
 
     channel.send("\n")
@@ -58,7 +53,7 @@ def get_file_name(ds, user, secret):
 
     prim_conf = re.findall(r'primary-config.*', printout).pop()
     res = re.findall(r'cf1:.*cfg', prim_conf).pop()
-    ds_print(ds, '*** Config file name ' + res, io_lock)
+    ds_print(ds, '*** Config file name ' + res)
 
     return res
 
@@ -80,7 +75,7 @@ def get_file(ds, user, secret, name, file_name):
 
     ds_print(ds, "*** SCP connect establish ", io_lock)
     scp = SCPClient(client.get_transport())
-    ds_print(ds, '*** Get file ' + file_name + ' from ' + ds, io_lock)
+    ds_print(ds, '*** Get file ' + file_name + ' from ' + ds)
     scp.get(file_name, dest)
     return dest
 
@@ -100,20 +95,21 @@ def mv_to_140(ds, config):
         time.sleep(CONNECT_TRY_INTERVAL)
 
     scp = SCPClient(ssh.get_transport())
-    ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir, io_lock)
-    scp.put(config , remote_dir )
+    ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir)
+    scp.put(config, remote_dir)
     os.remove(config)
 
 def copy_ds_backup(DS, user, secret, name):
     try:
         mv_to_140(DS, get_file(DS, user, secret, name, get_file_name(DS, user, secret).replace('cf1:\\', '')))
     except gaierror:
-        ds_print(DS, '!!! Does not exist', io_lock)
+        ds_print(DS, '!!! Does not exist')
 
 
-parser = optparse.OptionParser(description='Get config from DS\'s and move them to 1.140', usage="usage: %prog [file with ds list]")
+parser = optparse.OptionParser(description='Get config from DS\'s and move them to 1.140',
+                               usage="usage: %prog [file with ds list]")
 parser.add_option("-f", "--file", dest="ds_list_file_name",
-                     help="file with list DS", metavar="FILE")
+                  help="file with list DS", metavar="FILE")
 #parser.add_option( help='Path to file with list of ds', required=True)
 
 (options, args) = parser.parse_args()
@@ -138,7 +134,7 @@ user = getpass.getuser()
 secret = getpass.getpass('Password for DS:')
 
 while True:
-    st = raw_input("Enter a for \"After\" or b for \"Before\"\n: ")
+    st = raw_input("Enter a for \"After\" or b for \"Before\"\n: ").lower()
     if st == 'a' or st == 'b':
         break
 
