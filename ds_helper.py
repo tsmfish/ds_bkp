@@ -1,3 +1,6 @@
+#!/usr/bin/env python2.6
+# -*- coding: utf-8
+
 import re
 import threading
 
@@ -50,7 +53,7 @@ def is_contains(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: True if string contains regular expression
     """
-    assert(regexp.__class__.__name__ not in ('SRE_Pattern', str.__class__.__name__))
+    assert(regexp.__class__.__name__ in ['SRE_Pattern', str.__class__.__name__])
     if regexp.__class__.__name__ == 'SRE_Pattern':
         if regexp.search(text):
             return True
@@ -71,17 +74,19 @@ def ds_print(ds, message, io_lock=None):
     :param io_lock: object threading.Lock or threading.RLock
     """
     assert(io_lock and
-           io_lock.__class__.__name__ not in (threading.Lock().__class__.__name__,
-                                              threading.RLock().__class__.__name__))
+           io_lock.__class__.__name__ in [threading.Lock().__class__.__name__,
+                                          threading.RLock().__class__.__name__])
     if io_lock: io_lock.acquire()
     print "{ds} : {message}".format(ds=ds, message=message)
     if io_lock: io_lock.release()
 
 if __name__ == "__main__":
-    print RE.DS_NAME.findall(open('20161205_121503_Figaro.log').read())
+    print RE.DS_NAME, RE.DS_NAME.findall(open('20161205_121503_Figaro.log').read())
     print RE.DS_TYPE.findall(open('20161205_121503_Figaro.log').read())
     print RE.PRIMARY_BOF_IMAGE.findall(open('20161205_121503_Figaro.log').read())
     print RE.SECONDARY_BOF_IMAGE.findall(open('20161205_121503_Figaro.log').read())
     print RE.DIR_FILE_PREAMBLE.findall(open('20161205_121503_Figaro.log').read())
     print RE.FREE_SPACE_SIZE.findall(open('20161205_121503_Figaro.log').read())
     print RE.SW_VERSION.findall(open('20161205_121503_Figaro.log').read())
+    print extract(RE.DS_NAME, open('20161205_121503_Figaro.log').read())
+    print is_contains(RE.DS_TYPE, open('20161205_121503_Figaro.log').read())
