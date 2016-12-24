@@ -79,6 +79,7 @@ def get_file(ds, user, secret, name, file_name):
     scp.get(file_name, dest)
     return dest
 
+
 def mv_to_140(ds, config):
     remote_dir = '/mnt/om_kie/Backups/DS/' + ds + '/' + time.strftime("%Y") + '/'
     ssh = paramiko.SSHClient()
@@ -98,6 +99,7 @@ def mv_to_140(ds, config):
     ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir)
     scp.put(config, remote_dir)
     os.remove(config)
+
 
 def copy_ds_backup(DS, user, secret, name):
     try:
@@ -150,8 +152,8 @@ else:
     for ds in ds_list:
         thread = threading.Thread(target=copy_ds_backup, name=ds, args=(ds, user, secret, name))
         thread.start()
-        threading.appent(thread)
+        threads.appent(thread)
 
-    for thread in threading:
+    for thread in threads:
         thread.join()
 print "Finish running: {time}".format(time.strftime("%H:%m:%s"))
