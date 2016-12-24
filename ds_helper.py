@@ -7,7 +7,8 @@ import threading
 class RE:
     FLAGS = re.IGNORECASE
     FILE_DATE_STRING = r'\b\d\d\/\d\d\/\d\d\d\d\b'
-    FILE_TIME_STRING = r'\b\d\d:\d\d[am]\b'
+    FILE_TIME_STRING = r'\b\d\d:\d\d[ap]\b'
+    FILE_SIZE_PREAMBLE = FILE_DATE_STRING + r'\s+?' + FILE_TIME_STRING + r'\s+?(\d+?)\s+?'
     PRIMARY_BOF_IMAGE = re.compile(r'primary-image\s+?(\S+)\b', FLAGS)
     SECONDARY_BOF_IMAGE = re.compile(r'secondary-image\s+?(\S+)\b', FLAGS)
     FILE_DATE = re.compile(FILE_DATE_STRING)
@@ -36,7 +37,7 @@ def extract(regexp, text, flags=re.IGNORECASE):
     try:
         if regexp.__class__.__name__ == 'SRE_Pattern':
             return regexp.findall(text)[0]
-        elif regexp.__class__.__name__ == str.__class__.__name__:
+        elif regexp.__class__.__name__ == str.__name__:
             return re.findall(regexp, text, flags)[0]
         else:
             return None
@@ -52,7 +53,7 @@ def is_contains(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: True if string contains regular expression
     """
-    assert(regexp.__class__.__name__ not in ('SRE_Pattern', str.__class__.__name__))
+    assert(regexp.__class__.__name__ in ['SRE_Pattern', str.__class__.__name__])
     if regexp.__class__.__name__ == 'SRE_Pattern':
         if regexp.search(text):
             return True
@@ -74,14 +75,15 @@ def ds_print(ds, message, io_lock=None):
     :param io_lock: object threading.Lock or threading.RLock
     """
     assert(io_lock and
-           io_lock.__class__.__name__ not in (threading.Lock().__class__.__name__,
-                                              threading.RLock().__class__.__name__))
+           io_lock.__class__.__name__ in [threading.Lock().__class__.__name__,
+                                          threading.RLock().__class__.__name__])
     if io_lock: io_lock.acquire()
     print "{ds} : {message}".format(ds=ds, message=message)
     if io_lock: io_lock.release()
 
 
 if __name__ == "__main__":
+
     sample_text = """A:ds3-kha3# show version
 TiMOS-B-7.0.R9 both/mpc ALCATEL SAS-M 7210 Copyright (c) 2000-2015 Alcatel-Lucent.
 All rights reserved. All use subject to applicable license agreements.
@@ -161,7 +163,8 @@ A:ds3-kha3# logout"""
     print RE.DS_NAME.findall(sample_text)
     print RE.DS_TYPE.findall(sample_text)
     print RE.PRIMARY_BOF_IMAGE.findall(sample_text)
-    print RE.SECONDARY_BOF_IMAGE.findall()
+    print RE.SECONDARY_BOF_IMAGE.findall(sample_text)
     print RE.DIR_FILE_PREAMBLE.findall(sample_text)
+    print extract(RE.FILE_SIZE_PREAMBLE, sample_text)
     print RE.FREE_SPACE_SIZE.findall(sample_text)
     print RE.SW_VERSION.findall(sample_text)
