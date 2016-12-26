@@ -33,9 +33,9 @@ def get_file_name(ds, user, secret):
             break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
-            # ds_print(ds, e.message)
+            ds_print(ds, e)
         except Exception as e:
-            pass
+            ds_print(ds, e)
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
         ds_print(ds, "Can`t authorize")
@@ -75,18 +75,19 @@ def get_file(ds, user, secret, name, file_name):
             client.connect(ds, 22, user, secret)
             break
         except AuthenticationException as e:
-            ds_print(ds, "Error while authorize: " + e.args)
+            ds_print(ds, "Error while authorize: ")
+            ds_print(ds, e)
             # ds_print(ds, e.message)
         except Exception as e:
-            ds_print(ds, "Error:: " + e.args)
-            pass
+            ds_print(ds, "Error:: ")
+            ds_print(ds, e)
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
         ds_print(ds, "Can`t authorize")
         raise Exception("Can`t authorize on " + ds)
 
     ds_print(ds, "backup_ds.get_file - authorized")
-    ds_print(ds, "*** SCP connect establish ", io_lock)
+    ds_print(ds, "*** SCP connect establish ")
     scp = SCPClient(client.get_transport())
     ds_print(ds, '*** Get file ' + file_name + ' from ' + ds)
     scp.get(file_name, dest)
@@ -127,7 +128,8 @@ def copy_ds_backup(DS, user, secret, name):
     except gaierror:
         ds_print(DS, '!!! Does not exist')
     except BaseException as e:
-        ds_print(DS, 'Error wile backup: ' + e)
+        ds_print(DS, 'Error wile backup: ')
+        ds_print(e)
 
 
 
