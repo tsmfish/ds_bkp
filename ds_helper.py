@@ -75,9 +75,9 @@ def ds_print(ds, message, io_lock=None):
     :param io_lock: object threading.Lock or threading.RLock
     """
 
-    assert(not io_lock or io_lock and 
+    assert(not io_lock or (io_lock and
            io_lock.__class__.__name__ in [Lock().__class__.__name__,
-                                          RLock().__class__.__name__])
+                                          RLock().__class__.__name__]))
     if io_lock: io_lock.acquire()
     print "{ds} : {message}".format(ds=ds, message=message)
     if io_lock: io_lock.release()
@@ -85,7 +85,7 @@ def ds_print(ds, message, io_lock=None):
 
 if __name__ == "__main__":
 
-    sample_text = """A:ds3-kha3# show version
+    sample_text = r"""A:ds3-kha3# show version
 TiMOS-B-7.0.R9 both/mpc ALCATEL SAS-M 7210 Copyright (c) 2000-2015 Alcatel-Lucent.
 All rights reserved. All use subject to applicable license agreements.
 Built on Thu Oct 15 08:11:18 IST 2015 by builder in /home/builder/7.0B1/R9/panos/main

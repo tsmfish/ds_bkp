@@ -32,10 +32,14 @@ def get_file_name(ds, user, secret):
             client.connect(hostname=ds, username=user, password=secret, port=22, look_for_keys=False, allow_agent=False)
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
-            ds_print(ds, e.message)
+            # ds_print(ds, e.message)
         except Exception as e:
             pass
         time.sleep(CONNECT_TRY_INTERVAL)
+    else:
+        ds_print(ds, "Can`t authorize")
+        raise Exception("Can`t authorize on " + ds)
+
     ds_print(ds, "*** SSH establish with ")
     channel = client.invoke_shell()
 
@@ -68,10 +72,13 @@ def get_file(ds, user, secret, name, file_name):
             client.connect(ds, 22, user, secret)
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
-            ds_print(ds, e.message)
+            # ds_print(ds, e.message)
         except Exception as e:
             pass
         time.sleep(CONNECT_TRY_INTERVAL)
+    else:
+        ds_print(ds, "Can`t authorize")
+        raise Exception("Can`t authorize on " + ds)
 
     ds_print(ds, "*** SCP connect establish ", io_lock)
     scp = SCPClient(client.get_transport())
@@ -90,10 +97,13 @@ def mv_to_140(ds, config):
             break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
-            ds_print(ds, e.message)
+            # ds_print(ds, e.message)
         except Exception as e:
             pass
         time.sleep(CONNECT_TRY_INTERVAL)
+    else:
+        ds_print(ds, "Can`t authorize")
+        raise Exception("Can`t authorize on " + ds)
 
     scp = SCPClient(ssh.get_transport())
     ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir)
@@ -106,6 +116,8 @@ def copy_ds_backup(DS, user, secret, name):
         mv_to_140(DS, get_file(DS, user, secret, name, get_file_name(DS, user, secret).replace('cf1:\\', '')))
     except gaierror:
         ds_print(DS, '!!! Does not exist')
+    except BaseException as e:
+        ds_print(DS, 'Error wile backing')
 
 
 parser = optparse.OptionParser(description='Get config from DS\'s and move them to 1.140',
