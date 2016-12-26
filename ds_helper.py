@@ -74,7 +74,8 @@ def ds_print(ds, message, io_lock=None):
     :param message:
     :param io_lock: object threading.Lock or threading.RLock
     """
-    assert(io_lock and
+
+    assert(not io_lock or io_lock and 
            io_lock.__class__.__name__ in [Lock().__class__.__name__,
                                           RLock().__class__.__name__])
     if io_lock: io_lock.acquire()
@@ -171,3 +172,4 @@ A:ds3-kha3# logout"""
 
     ds_print('none', 'Test: ' + Lock().__class__.__name__, Lock())
     ds_print('none', 'Test: ' + RLock().__class__.__name__, RLock())
+    ds_print('none', 'Test: None')
