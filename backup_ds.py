@@ -31,8 +31,7 @@ def get_file_name(ds, user, secret):
             client.connect(hostname=ds, username=user, password=secret, port=22, look_for_keys=False, allow_agent=False)
             break
         except AuthenticationException as e:
-            ds_print(ds, "Error while authorize.")
-            ds_print(ds, e)
+            ds_print(ds, "Error while authorize: "+ str(e)
         except Exception as e:
             ds_print(ds, e)
         time.sleep(CONNECT_TRY_INTERVAL)
@@ -58,7 +57,6 @@ def get_file_name(ds, user, secret):
     prim_conf = re.findall(r'primary-config.*', printout).pop()
     res = re.findall(r'cf1:.*cfg', prim_conf).pop()
     ds_print(ds, '*** Config file name ' + res)
-    ds_print(ds, "backup_ds.get_file_name - return: " + res)
     return res
 
 
@@ -99,8 +97,7 @@ def mv_to_140(ds, config):
             ssh.connect('10.44.4.28', username='smdmud\\stscheck_script',  key_filename='/home/butko/script/ds_bkp/.id_script_dsa')
             break
         except AuthenticationException as e:
-            ds_print(ds, "Error while authorize.")
-            ds_print(ds, e)
+            ds_print(ds, "Error while authorize: " + str(e))
         except Exception as e:
             ds_print(ds, e)
 
@@ -108,7 +105,6 @@ def mv_to_140(ds, config):
     else:
         ds_print(ds, "Can`t authorize")
         raise Exception("Can`t authorize on " + ds)
-    ds_print(ds, 'backup_ds.mv_to_140 - authorised')
     scp = SCPClient(ssh.get_transport())
     ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir)
     scp.put(config, remote_dir)
@@ -173,3 +169,4 @@ else:
     for thread in threads:
         thread.join()
 print "Finish running: {time}".format(time=time.strftime("%H:%m"))
+
