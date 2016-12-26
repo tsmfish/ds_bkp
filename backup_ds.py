@@ -30,6 +30,7 @@ def get_file_name(ds, user, secret):
     for k in range(AUTHORISE_TRY_COUNT):
         try:
             client.connect(hostname=ds, username=user, password=secret, port=22, look_for_keys=False, allow_agent=False)
+            break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
             # ds_print(ds, e.message)
@@ -70,6 +71,7 @@ def get_file(ds, user, secret, name, file_name):
     for k in range(AUTHORISE_TRY_COUNT):
         try:
             client.connect(ds, 22, user, secret)
+            break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
             # ds_print(ds, e.message)
