@@ -73,9 +73,10 @@ def get_file(ds, user, secret, name, file_name):
             client.connect(ds, 22, user, secret)
             break
         except AuthenticationException as e:
-            ds_print(ds, "Error while authorize.")
+            ds_print(ds, "Error while authorize: " + e.args)
             # ds_print(ds, e.message)
         except Exception as e:
+            ds_print(ds, "Error:: " + e.args)
             pass
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
