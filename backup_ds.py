@@ -119,7 +119,8 @@ def copy_ds_backup(DS, user, secret, name):
     except gaierror:
         ds_print(DS, '!!! Does not exist')
     except BaseException as e:
-        ds_print(DS, 'Error wile backing')
+        ds_print(DS, 'Error wile backup: ' + e.args)
+
 
 
 parser = optparse.OptionParser(description='Get config from DS\'s and move them to 1.140',
