@@ -130,6 +130,7 @@ parser.add_option("-f", "--file", dest="ds_list_file_name",
 if not options.ds_list_file_name and not args:
     parser.error("Use [-f <ds list file> | ds ds ds ...]")
 
+paramiko.common.logging.basicConfig(level=paramiko.common.INFO)
 ds_list = args
 if options.ds_list_file_name:
     try:
