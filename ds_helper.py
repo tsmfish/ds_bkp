@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.6
 # -*- coding: utf-8
 import re
-import threading
+from threading import Lock, RLock
 
 
 class RE:
@@ -75,8 +75,8 @@ def ds_print(ds, message, io_lock=None):
     :param io_lock: object threading.Lock or threading.RLock
     """
     assert(io_lock and
-           io_lock.__class__.__name__ in [threading.Lock().__class__.__name__,
-                                          threading.RLock().__class__.__name__])
+           io_lock.__class__.__name__ in [Lock().__class__.__name__,
+                                          RLock().__class__.__name__])
     if io_lock: io_lock.acquire()
     print "{ds} : {message}".format(ds=ds, message=message)
     if io_lock: io_lock.release()
@@ -168,3 +168,6 @@ A:ds3-kha3# logout"""
     print extract(RE.FILE_SIZE_PREAMBLE, sample_text)
     print RE.FREE_SPACE_SIZE.findall(sample_text)
     print RE.SW_VERSION.findall(sample_text)
+
+    ds_print('none', 'Test: ' + Lock().__class__.__name__, Lock())
+    ds_print('none', 'Test: ' + RLock().__class__.__name__, RLock())

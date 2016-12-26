@@ -115,7 +115,7 @@ parser.add_option("-f", "--file", dest="ds_list_file_name",
 #parser.add_option( help='Path to file with list of ds', required=True)
 
 (options, args) = parser.parse_args()
-if not options.ds_list_file_name or not args:
+if not options.ds_list_file_name and not args:
     parser.error("Use [-f <ds list file> | ds ds ds ...]")
 
 ds_list = args
@@ -144,7 +144,7 @@ name = time.strftime("%y%m%d_") + st + '_upgrade_'
 
 #paramiko.common.logging.basicConfig(level=paramiko.common.DEBUG)
 
-print "Start running: {time}".format(time.strftime("%H:%m:%s"))
+print "Start running: {time}".format(time=time.strftime("%H:%m"))
 if len(ds_list) == 1:
     copy_ds_backup(ds_list[0], user, secret, name)
 else:
@@ -152,8 +152,8 @@ else:
     for ds in ds_list:
         thread = threading.Thread(target=copy_ds_backup, name=ds, args=(ds, user, secret, name))
         thread.start()
-        threads.appent(thread)
+        threads.append(thread)
 
     for thread in threads:
         thread.join()
-print "Finish running: {time}".format(time.strftime("%H:%m:%s"))
+print "Finish running: {time}".format(time=time.strftime("%H:%m"))
