@@ -59,15 +59,17 @@ def get_file_name(ds, user, secret):
     prim_conf = re.findall(r'primary-config.*', printout).pop()
     res = re.findall(r'cf1:.*cfg', prim_conf).pop()
     ds_print(ds, '*** Config file name ' + res)
-
+    ds_print(ds, "backup_ds.get_file_name - return: " + res)
     return res
 
 
 def get_file(ds, user, secret, name, file_name):
+    ds_print(ds, "backup_ds.get_file - start")
     dest = name + file_name
     client = paramiko.SSHClient()
     client.load_system_host_keys()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ds_print(ds, "backup_ds.get_file - authorize")
     for k in range(AUTHORISE_TRY_COUNT):
         try:
             client.connect(ds, 22, user, secret)
@@ -83,31 +85,36 @@ def get_file(ds, user, secret, name, file_name):
         ds_print(ds, "Can`t authorize")
         raise Exception("Can`t authorize on " + ds)
 
+    ds_print(ds, "backup_ds.get_file - authorized")
     ds_print(ds, "*** SCP connect establish ", io_lock)
     scp = SCPClient(client.get_transport())
     ds_print(ds, '*** Get file ' + file_name + ' from ' + ds)
     scp.get(file_name, dest)
+    ds_print(ds, "backup_ds.get_file return: " + dest)
     return dest
 
 
 def mv_to_140(ds, config):
+    ds_print(ds, "backup_ds.mv_to_140 - start")
     remote_dir = '/mnt/om_kie/Backups/DS/' + ds + '/' + time.strftime("%Y") + '/'
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ds_print(ds, 'backup_ds.mv_to_140 - authorise')
     for k in range(AUTHORISE_TRY_COUNT):
         try:
             ssh.connect('10.44.4.28', username='smdmud\\stscheck_script',  key_filename='/home/butko/script/ds_bkp/.id_script_dsa')
             break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize.")
-            # ds_print(ds, e.message)
+            ds_print(ds, e)
         except Exception as e:
-            pass
+            ds_print(ds, e)
+
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
         ds_print(ds, "Can`t authorize")
         raise Exception("Can`t authorize on " + ds)
-
+    ds_print(ds, 'backup_ds.mv_to_140 - authorised')
     scp = SCPClient(ssh.get_transport())
     ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir)
     scp.put(config, remote_dir)
@@ -120,7 +127,7 @@ def copy_ds_backup(DS, user, secret, name):
     except gaierror:
         ds_print(DS, '!!! Does not exist')
     except BaseException as e:
-        ds_print(DS, 'Error wile backup: ' + e.args)
+        ds_print(DS, 'Error wile backup: ' + e)
 
 
 

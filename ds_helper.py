@@ -34,14 +34,11 @@ def extract(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: first occur regular expression
     """
-    try:
-        if regexp.__class__.__name__ == 'SRE_Pattern':
-            return regexp.findall(text)[0]
-        elif regexp.__class__.__name__ == str.__name__:
-            return re.findall(regexp, text, flags)[0]
-        else:
-            return None
-    except IndexError as error:
+    if regexp.__class__.__name__ == 'SRE_Pattern':
+        return regexp.findall(text).pop()
+    elif regexp.__class__.__name__ == str.__name__:
+        return re.findall(regexp, text, flags).pop()
+    else:
         return None
 
 
