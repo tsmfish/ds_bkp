@@ -1,3 +1,5 @@
+#!/usr/bin/env python2.6
+# -*- coding: utf-8
 import base64
 import sys
 
