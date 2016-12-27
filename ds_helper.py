@@ -26,6 +26,9 @@ class RE:
     DS_NAME = re.compile(r'\bds\d-[0-9a-z]+\b', FLAGS)
 
 
+_re_compile_class_name = re.compile(r'').__class__.__name__
+
+
 def extract(regexp, text, flags=re.IGNORECASE):
     """
 
@@ -34,12 +37,12 @@ def extract(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: first occur regular expression
     """
-    if regexp.__class__.__name__ == 'SRE_Pattern':
+    assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__class__.__name__])
+    if regexp.__class__.__name__ == _re_compile_class_name:
         return regexp.findall(text).pop()
-    elif regexp.__class__.__name__ == str.__name__:
+    if regexp.__class__.__name__ == str.__name__:
         return re.findall(regexp, text, flags).pop()
-    else:
-        return None
+    return ""
 
 
 def is_contains(regexp, text, flags=re.IGNORECASE):
@@ -50,8 +53,9 @@ def is_contains(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: True if string contains regular expression
     """
-    assert(regexp.__class__.__name__ in ['SRE_Pattern', str.__class__.__name__])
-    if regexp.__class__.__name__ == 'SRE_Pattern':
+    assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__class__.__name__])
+
+    if regexp.__class__.__name__ == _re_compile_class_name:
         if regexp.search(text):
             return True
         else:
