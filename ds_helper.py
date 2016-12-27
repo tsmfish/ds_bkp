@@ -3,7 +3,6 @@
 import re
 from threading import Lock, RLock
 
-
 class RE:
     FLAGS = re.IGNORECASE
     FILE_DATE_STRING = r'\b\d\d\/\d\d\/\d\d\d\d\b'
