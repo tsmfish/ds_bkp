@@ -15,7 +15,7 @@ from netmiko.alcatel.alcatel_sros_ssh import AlcatelSrosSSH
 import paramiko
 from scp import SCPClient
 
-logging.log(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 client_paramiko = paramiko.SSHClient()
 client_paramiko.set_missing_host_key_policy(paramiko.AutoAddPolicy())
