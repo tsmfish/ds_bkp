@@ -2,8 +2,9 @@
 # -*- coding: utf-8
 import base64
 import sys
-
 import logging
+
+
 
 sys.path.insert(1, '/home/erkki/.local/lib/python2.6/site-packages/ecdsa-0.13-py2.6.egg/')
 sys.path.insert(1, '/home/erkki/.local/lib/python2.6/site-packages/requests-2.9.1-py2.6.egg')
@@ -29,7 +30,7 @@ try:
                                     password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'),
                                     secret=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Normal connect  - end\n\n'
 
@@ -41,7 +42,7 @@ try:
                                     password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'),
                                     secret=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + ve.__class__.__name__
     print e
 print 'Unknown host - end\n\n'
 
@@ -53,7 +54,7 @@ try:
                                     password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'),
                                     secret=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Bad user - end\n\n'
 
@@ -65,7 +66,7 @@ try:
                                     password=base64.b64decode(b'bm9uZQ==').decode('ascii'),
                                     secret=base64.b64decode(b'bm9uZQ==').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Bad password - end\n\n'
 
@@ -78,7 +79,7 @@ try:
                             username='pmalko',
                             password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 
 print 'Unknown host - start'
@@ -88,7 +89,7 @@ try:
                             username='pmalko',
                             password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Unknown host - end'
 
@@ -99,7 +100,7 @@ try:
                             username='malko',
                             password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Bad user - end'
 
@@ -110,7 +111,7 @@ try:
                             username='pmalko',
                             password=base64.b64decode(b'bm9uZQ==').decode('ascii'))
 except BaseException as e:
-    print e.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Bad password - end'
 
