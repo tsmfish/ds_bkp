@@ -22,6 +22,10 @@ from ds_helper import ds_print, RE, extract
 AUTHORISE_TRY_COUNT, \
 CONNECT_TRY_INTERVAL = 5, 7
 
+class OpenSSHException(BaseException):
+    def __init__(self, *args, **kvargs):
+        super(args, kvargs)
+
 
 def get_file_name(ds, user, secret):
     client = paramiko.SSHClient()
@@ -32,12 +36,14 @@ def get_file_name(ds, user, secret):
             break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize: "+ str(e))
+        except OpenSSHException as e:
+            raise OpenSSHException(str(e))
         except Exception as e:
             ds_print(ds, e)
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
         ds_print(ds, "Can`t authorize")
-        raise Exception("Can`t authorize on " + ds)
+        raise OpenSSHException("Can`t authorize on " + ds)
 
     ds_print(ds, "*** SSH establish with ")
     channel = client.invoke_shell()
@@ -70,6 +76,8 @@ def get_file(ds, user, secret, name, file_name):
         try:
             client.connect(ds, 22, user, secret)
             break
+        except OpenSSHException as e:
+            raise OpenSSHException(str(e))
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize: " + str(e))
         except Exception as e:
@@ -77,7 +85,7 @@ def get_file(ds, user, secret, name, file_name):
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
         ds_print(ds, "Can`t authorize")
-        raise Exception("Can`t authorize on " + ds)
+        raise OpenSSHException("Can`t authorize on " + ds)
 
     ds_print(ds, "*** SCP connect establish ")
     scp = SCPClient(client.get_transport())
@@ -98,13 +106,15 @@ def mv_to_140(ds, config):
             break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize: " + str(e))
+        except OpenSSHException as e:
+            raise OpenSSHException(str(e))
         except Exception as e:
             ds_print(ds, e)
 
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
         ds_print(ds, "Can`t authorize")
-        raise Exception("Can`t authorize on " + ds)
+        raise OpenSSHException("Can`t authorize on " + ds)
     scp = SCPClient(ssh.get_transport())
     ds_print(ds, '*** Move file ' + config + ' to ' + remote_dir)
     scp.put(config, remote_dir)
@@ -162,9 +172,12 @@ if len(ds_list) == 1:
 else:
     threads = list()
     for ds in ds_list:
-        thread = threading.Thread(target=copy_ds_backup, name=ds, args=(ds, user, secret, name))
-        thread.start()
-        threads.append(thread)
+        try:
+            thread = threading.Thread(target=copy_ds_backup, name=ds, args=(ds, user, secret, name))
+            thread.start()
+            threads.append(thread)
+        except OpenSSHException as e:
+            print e
 
     for thread in threads:
         thread.join()

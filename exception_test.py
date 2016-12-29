@@ -42,7 +42,7 @@ try:
                                     password=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'),
                                     secret=base64.b64decode(b'a1A2Qy1ONmQ=').decode('ascii'))
 except BaseException as e:
-    print "Exception Class Name: " + ve.__class__.__name__
+    print "Exception Class Name: " + e.__class__.__name__
     print e
 print 'Unknown host - end\n\n'
 
