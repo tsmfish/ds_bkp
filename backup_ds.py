@@ -24,8 +24,8 @@ CONNECT_TRY_INTERVAL = 5, 7
 
 
 class OpenSSHException(BaseException):
-    def __init__(self, *args, **kvargs):
-        super(args, kvargs)
+    def __init__(self, *args, **kwargs):
+        super(args, kwargs)
 
 
 def get_file_name(ds, user, secret):
