@@ -36,7 +36,7 @@ def extract(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: first occur regular expression
     """
-    assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__class__.__name__])
+    assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__name__])
     if regexp.__class__.__name__ == _re_compile_class_name:
         return regexp.findall(text).pop()
     if regexp.__class__.__name__ == str.__name__:
@@ -52,14 +52,14 @@ def is_contains(regexp, text, flags=re.IGNORECASE):
     :param flags: default re.IGNORECASE Only for string regexp arguments
     :return: True if string contains regular expression
     """
-    assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__class__.__name__])
+    assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__name__])
 
     if regexp.__class__.__name__ == _re_compile_class_name:
         if regexp.search(text):
             return True
         else:
             return False
-    if regexp.__class__.__name__ == str.__class__.__name__:
+    if regexp.__class__.__name__ == str.__name__:
         if re.search(regexp, text, flags):
             return True
         else:
@@ -166,10 +166,15 @@ A:ds3-kha3# logout"""
     print RE.PRIMARY_BOF_IMAGE.findall(sample_text)
     print RE.SECONDARY_BOF_IMAGE.findall(sample_text)
     print RE.DIR_FILE_PREAMBLE.findall(sample_text)
-    print extract(RE.FILE_SIZE_PREAMBLE, sample_text)
     print RE.FREE_SPACE_SIZE.findall(sample_text)
     print RE.SW_VERSION.findall(sample_text)
 
+    print extract(RE.FILE_SIZE_PREAMBLE, sample_text)
+    print is_contains(RE.FILE_SIZE_PREAMBLE, sample_text)
+
+    print extract(RE.DS_NAME, sample_text)
+    print is_contains(RE.DS_NAME, sample_text)
+
     ds_print('none', 'Test: ' + Lock().__class__.__name__, Lock())
     ds_print('none', 'Test: ' + RLock().__class__.__name__, RLock())
-    ds_print('none', 'Test: None')
+    ds_print('none', 'Test: None', None)
