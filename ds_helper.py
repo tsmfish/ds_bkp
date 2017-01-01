@@ -37,10 +37,13 @@ def extract(regexp, text, flags=re.IGNORECASE):
     :return: first occur regular expression
     """
     assert(regexp.__class__.__name__ in [_re_compile_class_name, str.__name__])
-    if regexp.__class__.__name__ == _re_compile_class_name:
-        return regexp.findall(text).pop()
-    if regexp.__class__.__name__ == str.__name__:
-        return re.findall(regexp, text, flags).pop()
+    try:
+        if regexp.__class__.__name__ == _re_compile_class_name:
+            return regexp.findall(text).pop()
+        if regexp.__class__.__name__ == str.__name__:
+            return re.findall(regexp, text, flags).pop()
+    except IndexError:
+        return ""
     return ""
 
 

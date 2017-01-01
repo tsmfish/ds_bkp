@@ -110,7 +110,7 @@ def mv_to_140(ds, config):
         except OpenSSHException as e:
             raise OpenSSHException(str(e))
         except Exception as e:
-            ds_print(ds, e)
+            ds_print(ds, str(e))
 
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
