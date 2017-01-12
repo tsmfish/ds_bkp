@@ -17,7 +17,7 @@ import paramiko
 from paramiko import AuthenticationException
 from socket import gaierror
 from scp import SCPClient
-from ds_helper import ds_print, RE, extract
+from ds_helper import ds_print, RE, extract, is_contains
 
 AUTHORISE_TRY_COUNT, \
 CONNECT_TRY_INTERVAL = 5, 7
@@ -137,10 +137,8 @@ parser.add_option("-f", "--file", dest="ds_list_file_name",
 #parser.add_option( help='Path to file with list of ds', required=True)
 
 (options, args) = parser.parse_args()
-if not options.ds_list_file_name and not args:
-    parser.error("Use [-f <ds list file> | ds ds ds ...]")
 
-ds_list = args
+ds_list = list(ds for ds in args if is_contains(RE.DS_NAME, ds))
 if options.ds_list_file_name:
     try:
         with open(options.ds_list_file_name) as ds_list_file:
@@ -148,7 +146,10 @@ if options.ds_list_file_name:
                 ds_list.append(extract(RE.DS_NAME, line))
     except IOError as e:
         print "Error while open file: {file}".format(file=options.ds_list_file_name)
-        print e.message
+        print e
+
+if not args:
+    parser.error("Use [-f <ds list file> | ds ds ds ...]")
 
 if len(ds_list) < 1:
     print "No ds found in arguments."
