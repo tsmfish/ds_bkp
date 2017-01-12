@@ -148,7 +148,7 @@ if options.ds_list_file_name:
         print "Error while open file: {file}".format(file=options.ds_list_file_name)
         print e
 
-if not args:
+if not ds_list:
     parser.error("Use [-f <ds list file> | ds ds ds ...]")
 
 if len(ds_list) < 1:
