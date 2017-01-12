@@ -22,10 +22,9 @@ from ds_helper import ds_print, RE, extract
 AUTHORISE_TRY_COUNT, \
 CONNECT_TRY_INTERVAL = 5, 7
 
-
 class OpenSSHException(BaseException):
-    def __init__(self, *args, **kwargs):
-        super(args, kwargs)
+    def __init__(self, *args, **kvargs):
+        super(args, kvargs)
 
 
 def get_file_name(ds, user, secret):
@@ -110,7 +109,7 @@ def mv_to_140(ds, config):
         except OpenSSHException as e:
             raise OpenSSHException(str(e))
         except Exception as e:
-            ds_print(ds, str(e))
+            ds_print(ds, e)
 
         time.sleep(CONNECT_TRY_INTERVAL)
     else:
@@ -178,9 +177,8 @@ else:
             thread.start()
             threads.append(thread)
         except OpenSSHException as e:
-            print ds_print(ds, str(e))
+            print e
 
     for thread in threads:
         thread.join()
-
 print "Finish running: {time}".format(time=time.strftime("%H:%m"))
