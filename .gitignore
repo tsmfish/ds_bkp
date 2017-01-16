@@ -1,6 +1,8 @@
 *.lst
 *~
 .idea/
+*.lst
+*.zip
 
 ### Python template
 # Byte-compiled / optimized / DLL files

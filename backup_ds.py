@@ -131,7 +131,7 @@ def copy_ds_backup(DS, user, secret, name):
 
 
 parser = optparse.OptionParser(description='Get config from DS\'s and move them to 1.140',
-                               usage="usage: %prog [file with ds list]")
+                               usage="usage: %prog [-f <ds list file> | ds ds ds ...]")
 parser.add_option("-f", "--file", dest="ds_list_file_name",
                   help="file with list DS", metavar="FILE")
 #parser.add_option( help='Path to file with list of ds', required=True)
@@ -149,7 +149,7 @@ if options.ds_list_file_name:
         print e
 
 if not ds_list:
-    parser.error("Use [-f <ds list file> | ds ds ds ...]")
+    parser.error("Use %prog [-f <ds list file> | ds ds ds ...]")
 
 if len(ds_list) < 1:
     print "No ds found in arguments."
