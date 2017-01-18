@@ -167,7 +167,7 @@ name = time.strftime("%y%m%d_") + st + '_upgrade_'
 
 #paramiko.common.logging.basicConfig(level=paramiko.common.DEBUG)
 
-print "Start running: {time}".format(time=time.strftime("%H:%m"))
+print "Start running: {time}".format(time=time.strftime("%H:%M:%S"))
 if len(ds_list) == 1:
     copy_ds_backup(ds_list[0], user, secret, name)
 else:
@@ -182,4 +182,4 @@ else:
 
     for thread in threads:
         thread.join()
-print "Finish running: {time}".format(time=time.strftime("%H:%m"))
+print "Finish running: {time}".format(time=time.strftime("%H:%M:%S"))
