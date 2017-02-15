@@ -29,10 +29,11 @@ class OpenSSHException(BaseException):
 
 def get_file_name(ds, user, secret):
     client = paramiko.SSHClient()
+    client.load_system_host_keys()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     for k in range(AUTHORISE_TRY_COUNT):
         try:
-            client.connect(hostname=ds, username=user, password=secret, port=22, look_for_keys=False, allow_agent=False)
+            client.connect(hostname=ds, username=user, password=secret, port=22, look_for_keys=False, allow_agent=True)
             break
         except AuthenticationException as e:
             ds_print(ds, "Error while authorize: "+ str(e))
@@ -74,7 +75,7 @@ def get_file(ds, user, secret, name, file_name):
 
     for k in range(AUTHORISE_TRY_COUNT):
         try:
-            client.connect(ds, 22, user, secret)
+            client.connect(ds, 22, user, secret, allow_agent=True)
             break
         except OpenSSHException as e:
             raise OpenSSHException(str(e))
