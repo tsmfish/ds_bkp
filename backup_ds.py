@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.6
 # -*- coding: utf-8
-
+import base64
+import random
 import sys
 import threading
 import time
@@ -21,6 +22,7 @@ from ds_helper import ds_print, RE, extract, is_contains
 
 AUTHORISE_TRY_COUNT, \
 CONNECT_TRY_INTERVAL = 5, 7
+random_wait_time = 3
 
 class OpenSSHException(BaseException):
     def __init__(self, *args, **kvargs):
@@ -123,6 +125,7 @@ def mv_to_140(ds, config):
 
 
 def copy_ds_backup(DS, user, secret, name):
+    time.sleep(random_wait_time * random.random())
     try:
         mv_to_140(DS, get_file(DS, user, secret, name, get_file_name(DS, user, secret).replace('cf1:\\', '')))
     except gaierror:
@@ -135,6 +138,10 @@ parser = optparse.OptionParser(description='Get config from DS\'s and move them 
                                usage="usage: %prog [-f <ds list file> | ds ds ds ...]")
 parser.add_option("-f", "--file", dest="ds_list_file_name",
                   help="file with list DS", metavar="FILE")
+parser.add_option("--pw", "--password", dest="secret",
+                  help="encoded password",
+                  type="string", default="")
+
 #parser.add_option( help='Path to file with list of ds', required=True)
 
 (options, args) = parser.parse_args()
@@ -157,7 +164,10 @@ if len(ds_list) < 1:
     exit()
 
 user = getpass.getuser()
-secret = getpass.getpass('Password for DS:')
+if options.secret:
+    secret = base64.b64decode(options.secret).encode("ascii")
+else:
+    secret = getpass.getpass('Password for DS:')
 
 while True:
     st = raw_input("Enter a for \"After\" or b for \"Before\"\n: ").lower()
