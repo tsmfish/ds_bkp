@@ -4,6 +4,9 @@ import re
 from threading import Lock, RLock
 
 
+print_message_format = "> {0} < : {1}"
+
+
 class RE:
     FLAGS = re.IGNORECASE
     FILE_DATE_STRING = r'\b\d\d\/\d\d\/\d\d\d\d\b'
@@ -24,6 +27,69 @@ class RE:
     SW_VERSION = re.compile(r'TiMOS-\w-\d\.\d\.R\d+?\b', FLAGS)
     FREE_SPACE_SIZE = re.compile(r'\b(\d+?)\s+?bytes free\.', FLAGS)
     DS_NAME = re.compile(r'\bds\d-[0-9a-z]+\b', FLAGS)
+
+
+class COLORS:
+
+    class STYLE:
+        normal    = 0
+        highlight = 1
+        underline = 4
+        blink     = 5
+        negative  = 7
+
+    class FOREGROUND:
+        black   = 30
+        red     = 31
+        green   = 32
+        yellow  = 33
+        blue    = 34
+        magenta = 35
+        cyan    = 36
+        white   = 37
+
+    class BACKGROUND:
+        black   = 40
+        red     = 41
+        green   = 42
+        yellow  = 43
+        blue    = 44
+        magenta = 45
+        cyan    = 46
+        white   = 47
+
+    end = "\x1b[0m"
+    colored = '\x1b[{style};{foreground};{background}m'
+
+    black   = colored.format(style=STYLE.normal, foreground=FOREGROUND.black  , background=BACKGROUND.white)
+    red     = colored.format(style=STYLE.normal, foreground=FOREGROUND.red    , background=BACKGROUND.black)
+    green   = colored.format(style=STYLE.normal, foreground=FOREGROUND.green  , background=BACKGROUND.black)
+    yellow  = colored.format(style=STYLE.normal, foreground=FOREGROUND.yellow , background=BACKGROUND.black)
+    blue    = colored.format(style=STYLE.normal, foreground=FOREGROUND.blue   , background=BACKGROUND.black)
+    magenta = colored.format(style=STYLE.normal, foreground=FOREGROUND.magenta, background=BACKGROUND.black)
+    cyan    = colored.format(style=STYLE.normal, foreground=FOREGROUND.cyan   , background=BACKGROUND.black)
+    white   = colored.format(style=STYLE.normal, foreground=FOREGROUND.white  , background=BACKGROUND.black)
+
+    colors = [white,
+              cyan,
+              green,
+              colored.format(style=STYLE.normal, foreground=FOREGROUND.blue, background=BACKGROUND.cyan),
+              yellow,
+              colored.format(style=STYLE.normal, foreground=FOREGROUND.blue, background=BACKGROUND.green),
+              magenta,
+              colored.format(style=STYLE.normal, foreground=FOREGROUND.cyan, background=BACKGROUND.blue),
+              black,
+              colored.format(style=STYLE.normal, foreground=FOREGROUND.blue, background=BACKGROUND.yellow),
+              ]
+
+    warning = yellow
+    fatal = colored.format(style=STYLE.highlight, foreground=FOREGROUND.red, background=BACKGROUND.black)
+    error = red
+    ok = green
+    info = cyan
+
+
+__ds_host_name_parse = re.compile(r'\b([A-Z]+?\d+?-[A-Z]{3})(\d+?)\b', re.IGNORECASE)
 
 
 def extract(regexp, text):
@@ -55,17 +121,63 @@ def is_contains(regexp, text):
         return False
 
 
-def ds_print(ds, message, io_lock=None, message_format="{0} : {1}"):
+def ds_print(host, message, print_lock=None, log_file_name=None, host_color=None, message_color=None):
     """
-    Thread safe printing with DS in start line.
 
-    :param ds:
+    :param host:
+    :type host: str
     :param message:
-    :param io_lock: object threading.Lock or threading.RLock
+    :type message: str
+    :param print_lock: io lock object
+    :type print_lock: object Lock
+    :param log_file_name: 
+    :type log_file_name: str
+    :param host_color: 
+    :type host_color: COLORS
+    :param message_color: 
+    :type message_color: COLORS
+    :return: None
+    :rtype: None
     """
-    if io_lock: io_lock.acquire()
-    print message_format.format(ds, message)
-    if io_lock: io_lock.release()
+
+    from threading import Lock
+    if __ds_host_name_parse.findall(host):
+        site_preamble, site_number = __ds_host_name_parse.findall(host)[0]
+        host = "{0}{1:<4d}".format(site_preamble, int(site_number))
+
+    if host_color and message_color:
+        colored_host = host_color + host + COLORS.end
+        colored_message = message_color + message + COLORS.end
+    elif host_color:
+        colored_host = host_color + host + COLORS.end
+        colored_message = host_color + message + COLORS.end
+    elif message_color:
+        colored_host = host
+        colored_message = message_color + message + COLORS.end
+    else:
+        colored_host = host
+        colored_message = message
+
+    if print_lock:
+        try:
+            print_lock.acquire()
+        except:
+            pass
+
+    print print_message_format.format(colored_host, colored_message)
+
+    if print_lock:
+        try:
+            print_lock.release()
+        except:
+            pass
+    if log_file_name:
+        try:
+            with open(log_file_name, 'a') as log_file:
+                log_file.write("{0}\n".format(message))
+                log_file.close()
+        except IOError:
+            pass
 
 
 if __name__ == "__main__":
