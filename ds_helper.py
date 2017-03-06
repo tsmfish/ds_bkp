@@ -4,7 +4,7 @@ import re
 from threading import Lock, RLock
 
 
-print_message_format = "> {0} < : {1}"
+print_message_format = "> {0}< : {1}"
 
 
 class RE:
