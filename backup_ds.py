@@ -136,16 +136,24 @@ def copy_ds_backup(DS, user, secret, name):
 
 parser = optparse.OptionParser(description='Get config from DS\'s and move them to 1.140',
                                usage="usage: %prog [-f <ds list file> | ds ds ds ...]",
-                               version="%prog v 1.1.46")
+                               version="%prog v 1.1.47")
 parser.add_option("-f", "--file", dest="ds_list_file_name",
                   help="file with list DS", metavar="FILE")
 parser.add_option("--pw", "--password", dest="secret",
                   help="encoded password",
                   type="string", default="")
+parser.add_option("-a", "--after", dest="after",
+                  help="backup after work",
+                  action="store_true", default=False)
+parser.add_option("-b", "--before", dest="before",
+                  help="backup before work",
+                  action="store_true", default=False)
 
 #parser.add_option( help='Path to file with list of ds', required=True)
 
 (options, args) = parser.parse_args()
+if options.after and options.before:
+    parser.error("option -a and -b are mutually exclusive")
 
 ds_list = list(ds for ds in args if is_contains(RE.DS_NAME, ds))
 if options.ds_list_file_name:
@@ -169,11 +177,14 @@ if options.secret:
     secret = base64.b64decode(options.secret).encode("ascii")
 else:
     secret = getpass.getpass('Password for DS:')
-
-while True:
-    st = raw_input("Enter a for \"After\" or b for \"Before\"\n: ").lower()
-    if st == 'a' or st == 'b':
-        break
+if (options.after and options.before) or (not options.after and not options.before):
+    while True:
+        st = raw_input("Enter a for \"After\" or b for \"Before\"\n: ").lower()
+        if st == 'a' or st == 'b':
+            break
+else:
+    if options.after: st = 'a'
+    if options.before: st = 'b'
 
 name = time.strftime("%y%m%d_") + st + '_upgrade_'
 
